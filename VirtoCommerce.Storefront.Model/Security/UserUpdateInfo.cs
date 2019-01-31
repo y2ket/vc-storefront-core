@@ -16,7 +16,6 @@ namespace VirtoCommerce.Storefront.Model.Security
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
         public IList<string> Roles { get; set; }
     }
 }
