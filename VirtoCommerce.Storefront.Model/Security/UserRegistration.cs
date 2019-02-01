@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace VirtoCommerce.Storefront.Model.Security
 {
-    public partial class UserRegistration 
+    public partial class UserRegistration
     {
         [FromForm(Name = "customer[photoUrl]")]
         public string PhotoUrl { get; set; }
@@ -35,16 +35,25 @@ namespace VirtoCommerce.Storefront.Model.Security
 
         [FromForm(Name = "customer[address]")]
         public Address Address { get; set; }
+
         [FromForm(Name = "customer[salutation]")]
         public string Salutation { get; set; }
+
+        [FromForm(Name = "customer[budget]")]
+        [Range(typeof(decimal), "0", "79228162514264337593543950335")]
+        public decimal? Budget { get; set; }
+
         [FromForm(Name = "customer[fullName]")]
         public string FullName { get; set; }
+
         [FromForm(Name = "customer[middleName]")]
         public string MiddleName { get; set; }
+
         [FromForm(Name = "customer[birthDate]")]
         public DateTime? BirthDate { get; set; }
+
         [FromForm(Name = "customer[timeZone]")]
-        public string TimeZone { get; set; }     
-      
+        public string TimeZone { get; set; }
+
     }
 }

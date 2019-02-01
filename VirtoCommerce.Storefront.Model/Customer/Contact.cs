@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace VirtoCommerce.Storefront.Model.Customer
 {
@@ -17,11 +18,14 @@ namespace VirtoCommerce.Storefront.Model.Customer
         /// </summary>
         public string LastName { get; set; }
 
+        /// <summary>
+        /// Returns budget of the customer.
+        /// </summary>
         public decimal? Budget
         {
-            get
+            get // Fix later: in table Contact no such column Budget
             {
-                if (decimal.TryParse(Salutation, out decimal result))
+                if (decimal.TryParse(Salutation, NumberStyles.Number, CultureInfo.InvariantCulture, out var result))
                 {
                     return result;
                 }
@@ -30,7 +34,7 @@ namespace VirtoCommerce.Storefront.Model.Customer
             }
             set
             {
-                Salutation = value.ToString();
+                Salutation = value?.ToString(CultureInfo.InvariantCulture);
             }
         }
 

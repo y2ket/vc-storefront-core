@@ -161,7 +161,6 @@ namespace VirtoCommerce.Storefront.Controllers.Api
                 }
 
                 var contact = registration.ToContact();
-                contact.Budget = registration.Budget;
                 contact.OrganizationId = registration.OrganizationId;
 
                 var user = registration.ToUser();
