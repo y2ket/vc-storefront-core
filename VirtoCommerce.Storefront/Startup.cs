@@ -416,6 +416,9 @@ namespace VirtoCommerce.Storefront
             app.UseMvc(routes =>
             {
                 routes.MapSlugRoute("{*path}", defaults: new { controller = "Home", action = "Index" });
+
+                routes.MapSpaFallbackRoute("angular-fallback",
+                   new { controller = "Home", action = "Index" });
             });
         }
     }
