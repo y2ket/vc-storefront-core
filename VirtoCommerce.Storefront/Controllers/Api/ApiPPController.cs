@@ -10,6 +10,7 @@ using VirtoCommerce.Storefront.AutoRestClients.CatalogModuleApi;
 using VirtoCommerce.Storefront.AutoRestClients.OrdersModuleApi;
 using VirtoCommerce.Storefront.AutoRestClients.PlatformModuleApi;
 using VirtoCommerce.Storefront.Domain;
+using VirtoCommerce.Storefront.Infrastructure;
 using VirtoCommerce.Storefront.Model;
 using VirtoCommerce.Storefront.Model.Cart.Services;
 using VirtoCommerce.Storefront.Model.Common;
@@ -19,6 +20,8 @@ using VirtoCommerce.Storefront.Model.Security;
 using VirtoCommerce.Storefront.Model.StaticContent;
 namespace VirtoCommerce.Storefront.Controllers.Api
 {
+    [StorefrontApiRoute("")]
+    [ResponseCache(CacheProfileName = "None")]
     public class ApiPPController : StorefrontControllerBase
     {
         private readonly IContentBlobProvider _contentBlobProvider;
@@ -62,7 +65,7 @@ namespace VirtoCommerce.Storefront.Controllers.Api
 
 
         // POST: storefrontapi/orderrequests
-        [HttpPost]
+        [HttpPost("orderrequests")]
         public async Task<ActionResult> CreateNewOrderRequestFromCart()
         {
             var cart = WorkContext.CurrentCart.Value;
@@ -97,7 +100,7 @@ namespace VirtoCommerce.Storefront.Controllers.Api
         }
 
         // POST: storefrontapi/approvalrequests/search
-        [HttpPost]
+        [HttpPost("approvalrequests/search")]
         public ActionResult SearchApprovalRequests([FromBody] ApprovalRequestSearchCriteria searchCriteria)
         {
 
@@ -161,7 +164,7 @@ namespace VirtoCommerce.Storefront.Controllers.Api
 
 
         //GET: storefrontapi/approvalworkflows/current
-        [HttpGet]
+        [HttpGet("approvalworkflows/current")]
         public IActionResult GetCurrentWorkflow()
         {
             return Ok(_currentOrderApprovalWorkflow);
@@ -188,7 +191,7 @@ namespace VirtoCommerce.Storefront.Controllers.Api
         }
 
         //POST: storefrontapi/approvalworkflows/apply
-        [HttpPost]
+        [HttpPost("approvalworkflows/apply")]
         public IActionResult ApplyWorkflow([FromBody] DynamicApprovalWorkflow workflow)
         {
             _currentOrderApprovalWorkflow = workflow;
@@ -196,7 +199,7 @@ namespace VirtoCommerce.Storefront.Controllers.Api
         }
 
         //POST: storefrontapi/orderrequests/triggers/fire
-        [HttpPost]
+        [HttpPost("/orderrequests/triggers/fire")]
         public IActionResult FireTriggerForRequest([FromBody]FireTriggerAction fireTriggerAction)
         {
             var request = _inMemoryRequestsStore.FirstOrDefault(x => x.Number.EqualsInvariant(fireTriggerAction.RequestNumber));
