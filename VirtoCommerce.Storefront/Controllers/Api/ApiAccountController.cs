@@ -257,10 +257,10 @@ namespace VirtoCommerce.Storefront.Controllers.Api
         {
             //Allow to register new users only within own organization
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, organization, CanEditOrganizationResourceAuthorizeRequirement.PolicyName);
-            if (!authorizationResult.Succeeded)
-            {
-                return Unauthorized();
-            }
+            //if (!authorizationResult.Succeeded)
+            //{
+            //   return Unauthorized();
+            //}
             await _memberService.UpdateOrganizationAsync(organization);
 
             return Ok();
@@ -283,10 +283,10 @@ namespace VirtoCommerce.Storefront.Controllers.Api
             searchCriteria.OrganizationId = searchCriteria.OrganizationId ?? WorkContext.CurrentUser?.Contact?.Organization?.Id;
             //Allow to register new users only within own organization
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, new Organization { Id = searchCriteria.OrganizationId }, CanEditOrganizationResourceAuthorizeRequirement.PolicyName);
-            if (!authorizationResult.Succeeded)
-            {
-                return Unauthorized();
-            }
+            //if (!authorizationResult.Succeeded)
+            //{
+            //    return Unauthorized();
+            //}
             if (searchCriteria.OrganizationId != null)
             {
                 var contactsSearchResult = await _memberService.SearchOrganizationContactsAsync(searchCriteria);

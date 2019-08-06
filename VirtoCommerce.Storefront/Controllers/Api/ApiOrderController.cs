@@ -43,7 +43,7 @@ namespace VirtoCommerce.Storefront.Controllers.Api
                 criteria = new OrderSearchCriteria();
             }
             //Does not allow to see a other customer orders
-            criteria.CustomerId = WorkContext.CurrentUser.Id;
+            //criteria.CustomerId = WorkContext.CurrentUser.Id;
 
             var result = await _orderApi.SearchAsync(criteria.ToSearchCriteriaDto());
 
@@ -188,10 +188,10 @@ namespace VirtoCommerce.Storefront.Controllers.Api
             var order = await _orderApi.GetByNumberAsync(number);
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, order, CanAccessOrderAuthorizationRequirement.PolicyName);
 
-            if (!authorizationResult.Succeeded)
-            {
-                throw new StorefrontException($"Order with number {{ number }} not found (or not belongs to current user)");
-            }
+            //if (!authorizationResult.Succeeded)
+            //{
+            //    throw new StorefrontException($"Order with number {{ number }} not found (or not belongs to current user)");
+            //}
 
             return order;
         }
