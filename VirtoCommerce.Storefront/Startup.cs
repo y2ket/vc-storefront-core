@@ -237,7 +237,8 @@ namespace VirtoCommerce.Storefront
             services.AddIdentity<User, Role>(options => { }).AddDefaultTokenProviders();
 
             services.AddScoped<CustomCookieAuthenticationEvents>();
-            services.ConfigureApplicationCookie(options => {
+            services.ConfigureApplicationCookie(options =>
+            {
                 Configuration.GetSection("CookieAuthenticationOptions").Bind(options);
                 options.EventsType = typeof(CustomCookieAuthenticationEvents);
             });
@@ -385,12 +386,14 @@ namespace VirtoCommerce.Storefront
             app.UseMiddleware<NoLiquidThemeMiddleware>();
             app.UseMiddleware<CreateStorefrontRolesMiddleware>();
             app.UseMiddleware<ApiErrorHandlingMiddleware>();
+            // TODO: use only for SPA stores
+            app.UseSpaFallbackMiddleware();
 
             //Do not use status code pages for Api requests
-            app.UseWhen(context => !context.Request.Path.IsApi(), appBuilder =>
-            {
-                appBuilder.UseStatusCodePagesWithReExecute("/error/{0}");
-            });
+            //app.UseWhen(context => !context.Request.Path.IsApi(), appBuilder =>
+            //{
+            //    appBuilder.UseStatusCodePagesWithReExecute("/error/{0}");
+            //});
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger(c => c.RouteTemplate = "docs/{documentName}/docs.json");
@@ -423,7 +426,10 @@ namespace VirtoCommerce.Storefront
             app.UseMvc(routes =>
             {
                 routes.MapSlugRoute("{*path}", defaults: new { controller = "Home", action = "Index" });
+                //routes.MapSpaFallbackRoute("angular-fallback",
+                //    new { controller = "Home", action = "Index" });
             });
+            //app.UseSpa(b => b.)
         }
     }
 }
