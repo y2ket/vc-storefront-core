@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DotLiquid;
+using Newtonsoft.Json;
 
 namespace VirtoCommerce.LiquidThemeEngine.Filters
 {
@@ -29,7 +28,15 @@ namespace VirtoCommerce.LiquidThemeEngine.Filters
                     //try to transform localization key
                     key = TryTransformKey(key, dictionary);
                 }
-                retVal = (localization.SelectToken(key) ?? key).ToString();
+
+                try
+                {
+                    retVal = (localization.SelectToken(key) ?? key).ToString();
+                }
+                catch (JsonReaderException)
+                {
+                    retVal = key;
+                }
             }
 
             if(dictionary != null)
