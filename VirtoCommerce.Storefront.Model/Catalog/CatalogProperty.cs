@@ -1,9 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using VirtoCommerce.Storefront.Model.Common;
 
 namespace VirtoCommerce.Storefront.Model.Catalog
 {
-    public partial class CatalogProperty : Entity, IAccessibleByIndexKey
+    public partial class CatalogProperty : Entity
     {
         public CatalogProperty()
         {
@@ -46,9 +50,5 @@ namespace VirtoCommerce.Storefront.Model.Catalog
         public bool IsMultivalue { get; set; }
 
         public IList<string> Values { get; set; }
-
-        public string IndexKey => Name;
-
-        public bool Hidden { get; set; }
     }
 }

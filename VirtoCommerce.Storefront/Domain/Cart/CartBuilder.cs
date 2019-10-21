@@ -51,7 +51,7 @@ namespace VirtoCommerce.Storefront.Domain
 
         #region ICartBuilder Members
 
-        public virtual ShoppingCart Cart { get; protected set; }
+        public virtual ShoppingCart Cart { get; private set; }
 
         public virtual async Task TakeCartAsync(ShoppingCart cart)
         {
@@ -505,12 +505,15 @@ namespace VirtoCommerce.Storefront.Domain
                 if (lineItem.Product == null || !lineItem.Product.IsActive || !lineItem.Product.IsBuyable)
                 {
                     lineItem.ValidationErrors.Add(new UnavailableError());
+                    lineItem.IsValid = false;
                 }
                 else
                 {
                     var isProductAvailable = new ProductIsAvailableSpecification(lineItem.Product).IsSatisfiedBy(lineItem.Quantity);
                     if (!isProductAvailable)
                     {
+                        lineItem.IsValid = false;
+
                         var availableQuantity = lineItem.Product.AvailableQuantity;
                         lineItem.ValidationErrors.Add(new QuantityError(availableQuantity));
                     }
@@ -521,8 +524,6 @@ namespace VirtoCommerce.Storefront.Domain
                         lineItem.ValidationErrors.Add(new PriceError(lineItem.SalePrice, lineItem.SalePriceWithTax, tierPrice.Price, tierPrice.PriceWithTax));
                     }
                 }
-
-                lineItem.IsValid = !lineItem.ValidationErrors.Any();
             }
             return Task.CompletedTask;
         }

@@ -40,17 +40,23 @@ namespace VirtoCommerce.Storefront.Model.Common
         {
             var tokenizer = new StringTokenizer(path, _pathSeparators);
             var depth = 0;
+
             foreach (var segment in tokenizer)
             {
-                if (segment.Equals(".."))
+                if (segment.Equals(".") || segment.Equals(""))
+                {
+                    continue;
+                }
+                else if (segment.Equals(".."))
                 {
                     depth--;
+
                     if (depth == -1)
                     {
                         return true;
                     }
                 }
-                else if (!segment.Equals(".") && !segment.Equals(""))
+                else
                 {
                     depth++;
                 }

@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using VirtoCommerce.Storefront.Extensions;
 
 namespace VirtoCommerce.Storefront.Middleware
 {
@@ -28,7 +27,7 @@ namespace VirtoCommerce.Storefront.Middleware
             catch (Exception ex)
             {
                 //Need handle only storefront api errors
-                if (!context.Response.HasStarted && context.Request.Path.IsApi())
+                if (!context.Response.HasStarted && context.Request.Path.ToString().Contains("/storefrontapi/"))
                 {
                     _logger.LogError(ex, ex.Message);
 

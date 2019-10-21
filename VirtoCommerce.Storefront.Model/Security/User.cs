@@ -1,8 +1,9 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
+using System.Text;
 using VirtoCommerce.Storefront.Model.Common;
 using VirtoCommerce.Storefront.Model.Customer;
 using VirtoCommerce.Storefront.Model.Order;
@@ -47,9 +48,6 @@ namespace VirtoCommerce.Storefront.Model.Security
         public string DefaultLanguage { get; set; }
 
         public bool TwoFactorEnabled { get; set; }
-
-        public string TwoFactorAuthenticatorKey { get; set; }
-
         public bool IsLockedOut
         {
             get
@@ -140,17 +138,5 @@ namespace VirtoCommerce.Storefront.Model.Security
         [JsonIgnore]
         [IgnoreDataMember]
         public IMutablePagedList<Subscription> Subscriptions { get; set; }
-
-        public IList<DynamicProperty> DynamicProperties => Contact?.DynamicProperties;
-
-        public string FirstName => Contact?.FirstName;
-        public string LastName => Contact?.LastName;
-        public string MiddleName => Contact?.MiddleName;
-        public string Name => Contact?.FullName;
-        public string TimeZone => Contact?.TimeZone;
-        public Address DefaultAddress => Contact?.DefaultAddress;
-        public Address DefaultBillingAddress => Contact?.DefaultBillingAddress;
-        public Address DefaultShippingAddress => Contact?.DefaultShippingAddress;
-        public IList<Address> Addresses => Contact?.Addresses;
     }
 }

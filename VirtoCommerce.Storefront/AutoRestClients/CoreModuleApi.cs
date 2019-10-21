@@ -52,19 +52,6 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi
         /// <summary>
         /// Initializes a new instance of the VirtoCommerceCoreRESTAPIdocumentation class.
         /// </summary>
-        /// <param name='httpClient'>
-        /// HttpClient to be used
-        /// </param>
-        /// <param name='disposeHttpClient'>
-        /// True: will dispose the provided httpClient on calling VirtoCommerceCoreRESTAPIdocumentation.Dispose(). False: will not dispose provided httpClient</param>
-        protected VirtoCommerceCoreRESTAPIdocumentation(HttpClient httpClient, bool disposeHttpClient) : base(httpClient, disposeHttpClient)
-        {
-            Initialize();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the VirtoCommerceCoreRESTAPIdocumentation class.
-        /// </summary>
         /// <param name='handlers'>
         /// Optional. The delegating handlers to add to the http client pipeline.
         /// </param>
@@ -145,33 +132,6 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi
         /// Thrown when a required parameter is null
         /// </exception>
         public VirtoCommerceCoreRESTAPIdocumentation(ServiceClientCredentials credentials, params DelegatingHandler[] handlers) : this(handlers)
-        {
-            if (credentials == null)
-            {
-                throw new System.ArgumentNullException("credentials");
-            }
-            Credentials = credentials;
-            if (Credentials != null)
-            {
-                Credentials.InitializeServiceClient(this);
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the VirtoCommerceCoreRESTAPIdocumentation class.
-        /// </summary>
-        /// <param name='credentials'>
-        /// Required. Subscription credentials which uniquely identify client subscription.
-        /// </param>
-        /// <param name='httpClient'>
-        /// HttpClient to be used
-        /// </param>
-        /// <param name='disposeHttpClient'>
-        /// True: will dispose the provided httpClient on calling VirtoCommerceCoreRESTAPIdocumentation.Dispose(). False: will not dispose provided httpClient</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
-        /// </exception>
-        public VirtoCommerceCoreRESTAPIdocumentation(ServiceClientCredentials credentials, HttpClient httpClient, bool disposeHttpClient) : this(httpClient, disposeHttpClient)
         {
             if (credentials == null)
             {
@@ -4072,7 +4032,9 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi
         /// <summary>
         /// Sign in with user name and password
         /// </summary>
-        /// <param name='credentials'>
+        /// <param name='userName'>
+        /// </param>
+        /// <param name='password'>
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -4095,11 +4057,15 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<SignInResult>> PasswordSignInWithHttpMessagesAsync(SignInCredentials credentials, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<SignInResult>> PasswordSignInWithHttpMessagesAsync(string userName, string password, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (credentials == null)
+            if (userName == null)
             {
-                throw new ValidationException(ValidationRules.CannotBeNull, "credentials");
+                throw new ValidationException(ValidationRules.CannotBeNull, "userName");
+            }
+            if (password == null)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, "password");
             }
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -4108,13 +4074,27 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi
             {
                 _invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
-                tracingParameters.Add("credentials", credentials);
+                tracingParameters.Add("userName", userName);
+                tracingParameters.Add("password", password);
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "PasswordSignIn", tracingParameters);
             }
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "api/storefront/security/user/signin").ToString();
+            List<string> _queryParameters = new List<string>();
+            if (userName != null)
+            {
+                _queryParameters.Add(string.Format("userName={0}", System.Uri.EscapeDataString(userName)));
+            }
+            if (password != null)
+            {
+                _queryParameters.Add(string.Format("password={0}", System.Uri.EscapeDataString(password)));
+            }
+            if (_queryParameters.Count > 0)
+            {
+                _url += "?" + string.Join("&", _queryParameters);
+            }
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
@@ -4137,12 +4117,6 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi
 
             // Serialize Request
             string _requestContent = null;
-            if(credentials != null)
-            {
-                _requestContent = SafeJsonConvert.SerializeObject(credentials, Client.SerializationSettings);
-                _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-            }
             // Set Credentials
             if (Client.Credentials != null)
             {
@@ -5430,7 +5404,9 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi
         /// <summary>
         /// Sign in with user name and password
         /// </summary>
-        /// <param name='credentials'>
+        /// <param name='userName'>
+        /// </param>
+        /// <param name='password'>
         /// </param>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
@@ -5447,7 +5423,7 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        Task<HttpOperationResponse<SignInResult>> PasswordSignInWithHttpMessagesAsync(SignInCredentials credentials, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<SignInResult>> PasswordSignInWithHttpMessagesAsync(string userName, string password, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
         /// <summary>
         /// Create a new user
         /// </summary>
@@ -5774,11 +5750,13 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='credentials'>
+            /// <param name='userName'>
             /// </param>
-            public static SignInResult PasswordSignIn(this IStorefrontSecurity operations, SignInCredentials credentials)
+            /// <param name='password'>
+            /// </param>
+            public static SignInResult PasswordSignIn(this IStorefrontSecurity operations, string userName, string password)
             {
-                return operations.PasswordSignInAsync(credentials).GetAwaiter().GetResult();
+                return operations.PasswordSignInAsync(userName, password).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -5787,14 +5765,16 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='credentials'>
+            /// <param name='userName'>
+            /// </param>
+            /// <param name='password'>
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<SignInResult> PasswordSignInAsync(this IStorefrontSecurity operations, SignInCredentials credentials, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<SignInResult> PasswordSignInAsync(this IStorefrontSecurity operations, string userName, string password, CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.PasswordSignInWithHttpMessagesAsync(credentials, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.PasswordSignInWithHttpMessagesAsync(userName, password, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
@@ -6825,17 +6805,10 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
         /// <summary>
         /// Initializes a new instance of the DynamicPropertyObjectValue class.
         /// </summary>
-        /// <param name="valueType">Possible values include: 'Undefined',
-        /// 'ShortText', 'LongText', 'Integer', 'Decimal', 'DateTime',
-        /// 'Boolean', 'Html', 'Image'</param>
-        public DynamicPropertyObjectValue(string objectType = default(string), string objectId = default(string), string locale = default(string), object value = default(object), string valueId = default(string), string valueType = default(string))
+        public DynamicPropertyObjectValue(string locale = default(string), object value = default(object))
         {
-            ObjectType = objectType;
-            ObjectId = objectId;
             Locale = locale;
             Value = value;
-            ValueId = valueId;
-            ValueType = valueType;
             CustomInit();
         }
 
@@ -6846,16 +6819,6 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "objectType")]
-        public string ObjectType { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "objectId")]
-        public string ObjectId { get; set; }
-
-        /// <summary>
-        /// </summary>
         [JsonProperty(PropertyName = "locale")]
         public string Locale { get; set; }
 
@@ -6863,19 +6826,6 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
         /// </summary>
         [JsonProperty(PropertyName = "value")]
         public object Value { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "valueId")]
-        public string ValueId { get; set; }
-
-        /// <summary>
-        /// Gets or sets possible values include: 'Undefined', 'ShortText',
-        /// 'LongText', 'Integer', 'Decimal', 'DateTime', 'Boolean', 'Html',
-        /// 'Image'
-        /// </summary>
-        [JsonProperty(PropertyName = "valueType")]
-        public string ValueType { get; set; }
 
     }
 }
@@ -7848,8 +7798,9 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
         /// </summary>
         /// <param name="userState">Possible values include: 'PendingApproval',
         /// 'Approved', 'Rejected'</param>
-        public ApplicationUserExtended(string userName = default(string), string email = default(string), string phoneNumber = default(string), bool? emailConfirmed = default(bool?), bool? phoneNumberConfirmed = default(bool?), bool? twoFactorEnabled = default(bool?), System.DateTime? lockoutEndDateUtc = default(System.DateTime?), bool? lockoutEnabled = default(bool?), int? accessFailedCount = default(int?), string storeId = default(string), string memberId = default(string), string icon = default(string), bool? isAdministrator = default(bool?), string userType = default(string), string userState = default(string), string password = default(string), bool? passwordExpired = default(bool?), string passwordHash = default(string), string securityStamp = default(string), IList<ApplicationUserLogin> logins = default(IList<ApplicationUserLogin>), IList<Role> roles = default(IList<Role>), IList<string> permissions = default(IList<string>), IList<ApiAccount> apiAccounts = default(IList<ApiAccount>), IList<OperationLog> operationsLog = default(IList<OperationLog>), System.DateTime? createdDate = default(System.DateTime?), System.DateTime? modifiedDate = default(System.DateTime?), string createdBy = default(string), string modifiedBy = default(string), string id = default(string))
+        public ApplicationUserExtended(string id = default(string), string userName = default(string), string email = default(string), string phoneNumber = default(string), bool? emailConfirmed = default(bool?), bool? phoneNumberConfirmed = default(bool?), bool? twoFactorEnabled = default(bool?), System.DateTime? lockoutEndDateUtc = default(System.DateTime?), bool? lockoutEnabled = default(bool?), int? accessFailedCount = default(int?), string storeId = default(string), string memberId = default(string), string icon = default(string), bool? isAdministrator = default(bool?), string userType = default(string), string userState = default(string), string password = default(string), bool? passwordExpired = default(bool?), string passwordHash = default(string), string securityStamp = default(string), IList<ApplicationUserLogin> logins = default(IList<ApplicationUserLogin>), IList<Role> roles = default(IList<Role>), IList<string> permissions = default(IList<string>), IList<ApiAccount> apiAccounts = default(IList<ApiAccount>), IList<OperationLog> operationsLog = default(IList<OperationLog>))
         {
+            Id = id;
             UserName = userName;
             Email = email;
             PhoneNumber = phoneNumber;
@@ -7874,11 +7825,6 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
             Permissions = permissions;
             ApiAccounts = apiAccounts;
             OperationsLog = operationsLog;
-            CreatedDate = createdDate;
-            ModifiedDate = modifiedDate;
-            CreatedBy = createdBy;
-            ModifiedBy = modifiedBy;
-            Id = id;
             CustomInit();
         }
 
@@ -7886,6 +7832,11 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
         /// An initialization method that performs custom operations like setting defaults
         /// </summary>
         partial void CustomInit();
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "id")]
+        public string Id { get; set; }
 
         /// <summary>
         /// </summary>
@@ -8008,31 +7959,6 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
         /// </summary>
         [JsonProperty(PropertyName = "operationsLog")]
         public IList<OperationLog> OperationsLog { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "createdDate")]
-        public System.DateTime? CreatedDate { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "modifiedDate")]
-        public System.DateTime? ModifiedDate { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "createdBy")]
-        public string CreatedBy { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "modifiedBy")]
-        public string ModifiedBy { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
 
     }
 }
@@ -8674,9 +8600,8 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
         /// <summary>
         /// Initializes a new instance of the TaxLine class.
         /// </summary>
-        public TaxLine(string typeName = default(string), string code = default(string), string name = default(string), double? amount = default(double?), int? quantity = default(int?), double? price = default(double?), string taxType = default(string), string id = default(string))
+        public TaxLine(string code = default(string), string name = default(string), double? amount = default(double?), int? quantity = default(int?), double? price = default(double?), string taxType = default(string), string id = default(string))
         {
-            TypeName = typeName;
             Code = code;
             Name = name;
             Amount = amount;
@@ -8691,11 +8616,6 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
         /// An initialization method that performs custom operations like setting defaults
         /// </summary>
         partial void CustomInit();
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "typeName")]
-        public string TypeName { get; set; }
 
         /// <summary>
         /// </summary>
@@ -8864,14 +8784,12 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
         /// <summary>
         /// Initializes a new instance of the TaxRate class.
         /// </summary>
-        public TaxRate(double? rate = default(double?), double? percentRate = default(double?), string currency = default(string), TaxLine line = default(TaxLine), string taxProviderCode = default(string), IList<TaxDetail> taxDetails = default(IList<TaxDetail>))
+        public TaxRate(double? rate = default(double?), string currency = default(string), TaxLine line = default(TaxLine), TaxProvider taxProvider = default(TaxProvider))
         {
             Rate = rate;
-            PercentRate = percentRate;
             Currency = currency;
             Line = line;
-            TaxProviderCode = taxProviderCode;
-            TaxDetails = taxDetails;
+            TaxProvider = taxProvider;
             CustomInit();
         }
 
@@ -8887,11 +8805,6 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "percentRate")]
-        public double? PercentRate { get; set; }
-
-        /// <summary>
-        /// </summary>
         [JsonProperty(PropertyName = "currency")]
         public string Currency { get; set; }
 
@@ -8902,13 +8815,8 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "taxProviderCode")]
-        public string TaxProviderCode { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "taxDetails")]
-        public IList<TaxDetail> TaxDetails { get; set; }
+        [JsonProperty(PropertyName = "taxProvider")]
+        public TaxProvider TaxProvider { get; set; }
 
     }
 }
@@ -9230,9 +9138,10 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
         /// in</param>
         /// <param name="userState">Possible values include: 'PendingApproval',
         /// 'Approved', 'Rejected'</param>
-        public StorefrontUser(IList<string> allowedStores = default(IList<string>), string userName = default(string), string email = default(string), string phoneNumber = default(string), bool? emailConfirmed = default(bool?), bool? phoneNumberConfirmed = default(bool?), bool? twoFactorEnabled = default(bool?), System.DateTime? lockoutEndDateUtc = default(System.DateTime?), bool? lockoutEnabled = default(bool?), int? accessFailedCount = default(int?), string storeId = default(string), string memberId = default(string), string icon = default(string), bool? isAdministrator = default(bool?), string userType = default(string), string userState = default(string), string password = default(string), bool? passwordExpired = default(bool?), string passwordHash = default(string), string securityStamp = default(string), IList<ApplicationUserLogin> logins = default(IList<ApplicationUserLogin>), IList<Role> roles = default(IList<Role>), IList<string> permissions = default(IList<string>), IList<ApiAccount> apiAccounts = default(IList<ApiAccount>), IList<OperationLog> operationsLog = default(IList<OperationLog>), System.DateTime? createdDate = default(System.DateTime?), System.DateTime? modifiedDate = default(System.DateTime?), string createdBy = default(string), string modifiedBy = default(string), string id = default(string))
+        public StorefrontUser(IList<string> allowedStores = default(IList<string>), string id = default(string), string userName = default(string), string email = default(string), string phoneNumber = default(string), bool? emailConfirmed = default(bool?), bool? phoneNumberConfirmed = default(bool?), bool? twoFactorEnabled = default(bool?), System.DateTime? lockoutEndDateUtc = default(System.DateTime?), bool? lockoutEnabled = default(bool?), int? accessFailedCount = default(int?), string storeId = default(string), string memberId = default(string), string icon = default(string), bool? isAdministrator = default(bool?), string userType = default(string), string userState = default(string), string password = default(string), bool? passwordExpired = default(bool?), string passwordHash = default(string), string securityStamp = default(string), IList<ApplicationUserLogin> logins = default(IList<ApplicationUserLogin>), IList<Role> roles = default(IList<Role>), IList<string> permissions = default(IList<string>), IList<ApiAccount> apiAccounts = default(IList<ApiAccount>), IList<OperationLog> operationsLog = default(IList<OperationLog>))
         {
             AllowedStores = allowedStores;
+            Id = id;
             UserName = userName;
             Email = email;
             PhoneNumber = phoneNumber;
@@ -9257,11 +9166,6 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
             Permissions = permissions;
             ApiAccounts = apiAccounts;
             OperationsLog = operationsLog;
-            CreatedDate = createdDate;
-            ModifiedDate = modifiedDate;
-            CreatedBy = createdBy;
-            ModifiedBy = modifiedBy;
-            Id = id;
             CustomInit();
         }
 
@@ -9275,6 +9179,11 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
         /// </summary>
         [JsonProperty(PropertyName = "allowedStores")]
         public IList<string> AllowedStores { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "id")]
+        public string Id { get; set; }
 
         /// <summary>
         /// </summary>
@@ -9397,87 +9306,6 @@ namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
         /// </summary>
         [JsonProperty(PropertyName = "operationsLog")]
         public IList<OperationLog> OperationsLog { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "createdDate")]
-        public System.DateTime? CreatedDate { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "modifiedDate")]
-        public System.DateTime? ModifiedDate { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "createdBy")]
-        public string CreatedBy { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "modifiedBy")]
-        public string ModifiedBy { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
-
-    }
-}
-// <auto-generated>
-// Code generated by Microsoft (R) AutoRest Code Generator.
-// Changes may cause incorrect behavior and will be lost if the code is
-// regenerated.
-// </auto-generated>
-
-namespace VirtoCommerce.Storefront.AutoRestClients.CoreModuleApi.Models
-{
-    using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
-    using Newtonsoft.Json;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    public partial class SignInCredentials
-    {
-        /// <summary>
-        /// Initializes a new instance of the SignInCredentials class.
-        /// </summary>
-        public SignInCredentials()
-        {
-            CustomInit();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the SignInCredentials class.
-        /// </summary>
-        public SignInCredentials(string username = default(string), string password = default(string))
-        {
-            Username = username;
-            Password = password;
-            CustomInit();
-        }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "username")]
-        public string Username { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "password")]
-        public string Password { get; set; }
 
     }
 }

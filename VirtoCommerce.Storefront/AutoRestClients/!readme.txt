@@ -1,6 +1,4 @@
-
-Install Node.js v4.0.0 or above (we recommend latest LTS version https://nodejs.org/en/)
-Install latest AutoRest globally via 'npm install -g autorest' command (2.0.4283 was used last time)
+Install latest AutoRest v1 globally via 'npm install -g autorest@1.2.2' command
  
 1. Open Tools > NuGet Package Manager > Package Manager Console
 2. Run the following commands to generate API clients:

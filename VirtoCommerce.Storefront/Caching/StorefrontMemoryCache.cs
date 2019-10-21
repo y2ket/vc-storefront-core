@@ -1,6 +1,5 @@
 using System;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using VirtoCommerce.Storefront.Infrastructure;
 using VirtoCommerce.Storefront.Model.Caching;
@@ -12,65 +11,49 @@ namespace VirtoCommerce.Storefront.Caching
         private readonly StorefrontOptions _storefrontOptions;
         private readonly IMemoryCache _memoryCache;
         private bool _disposed;
-        private readonly ILogger _log;
 
-        public StorefrontMemoryCache(IMemoryCache memoryCache, IOptions<StorefrontOptions> storefrontOptions, ILogger<StorefrontMemoryCache> log)
+        public StorefrontMemoryCache(IMemoryCache memoryCache, IOptions<StorefrontOptions> storefrontOptions)
         {
             _memoryCache = memoryCache;
             _storefrontOptions = storefrontOptions.Value;
-            _log = log;
         }
 
         public MemoryCacheEntryOptions GetDefaultCacheEntryOptions()
         {
-            var result = new MemoryCacheEntryOptions();
-
-            if (!CacheEnabled)
+            return new MemoryCacheEntryOptions
             {
-                result.AbsoluteExpirationRelativeToNow = TimeSpan.FromTicks(1);
-            }
-            else
-            {
-                if (AbsoluteExpiration != null)
-                {
-                    result.AbsoluteExpirationRelativeToNow = AbsoluteExpiration;
-                }
-                else if (SlidingExpiration != null)
-                {
-                    result.SlidingExpiration = SlidingExpiration;
-                }
-            }
-            return result;
+                AbsoluteExpirationRelativeToNow = CacheEnabled ? AbsoluteExpiration : TimeSpan.FromTicks(1)
+            };
         }
 
-        public virtual ICacheEntry CreateEntry(object key)
+        public ICacheEntry CreateEntry(object key)
         {
             var result = _memoryCache.CreateEntry(key);
             if (result != null)
             {
-                result.RegisterPostEvictionCallback(callback: EvictionCallback);
                 var options = GetDefaultCacheEntryOptions();
                 result.SetOptions(options);
             }
             return result;
         }
 
-        public virtual void Remove(object key)
+        public void Remove(object key)
         {
             _memoryCache.Remove(key);
         }
 
-        public virtual bool TryGetValue(object key, out object value)
+        public bool TryGetValue(object key, out object value)
         {
             return _memoryCache.TryGetValue(key, out value);
         }
 
-        protected TimeSpan? AbsoluteExpiration => _storefrontOptions.CacheAbsoluteExpiration;
-        protected TimeSpan? SlidingExpiration => _storefrontOptions.CacheSlidingExpiration;
+        protected TimeSpan AbsoluteExpiration => _storefrontOptions.CacheAbsoluteExpiration;
 
         protected bool CacheEnabled => _storefrontOptions.CacheEnabled;
 
-
+        /// <summary>
+        /// Cleans up the background collection events.
+        /// </summary>
         ~StorefrontMemoryCache()
         {
             Dispose(false);
@@ -79,12 +62,6 @@ namespace VirtoCommerce.Storefront.Caching
         public void Dispose()
         {
             Dispose(true);
-            // This object will be cleaned up by the Dispose method.
-            // Therefore, you should call GC.SupressFinalize to
-            // take this object off the finalization queue
-            // and prevent finalization code for this object
-            // from executing a second time.
-            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -93,15 +70,11 @@ namespace VirtoCommerce.Storefront.Caching
             {
                 if (disposing)
                 {
-                    _memoryCache.Dispose();
+                    GC.SuppressFinalize(this);
                 }
+
                 _disposed = true;
             }
-        }
-
-        protected virtual void EvictionCallback(object key, object value, EvictionReason reason, object state)
-        {
-            _log.LogInformation($"EvictionCallback: Cache with key {key} has expired.");
         }
     }
 }

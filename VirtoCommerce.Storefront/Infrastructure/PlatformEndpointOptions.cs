@@ -19,7 +19,5 @@ namespace VirtoCommerce.Storefront.Infrastructure
         public string Password { get; set; }
 
         public TimeSpan RequestTimeout { get; set; } = TimeSpan.FromSeconds(30);
-
     }
-
 }

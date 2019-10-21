@@ -10,7 +10,7 @@ namespace VirtoCommerce.Storefront.Model.Common
         {
             if (obj == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new NullReferenceException(nameof(obj));
             }
             var objType = obj.GetType();
 

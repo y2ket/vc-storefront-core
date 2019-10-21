@@ -117,22 +117,13 @@ namespace VirtoCommerce.Storefront.Model.Cart
             {
                 paymentTaxRate = taxRates.FirstOrDefault(x => x.Line.Code.EqualsInvariant(PaymentGatewayCode));
             }
-            if (paymentTaxRate != null)
+            if (paymentTaxRate != null && paymentTaxRate.Rate.Amount > 0)
             {
-                if (paymentTaxRate.PercentRate > 0)
+                var amount = Total.Amount > 0 ? Total.Amount : Price.Amount;
+                if (amount > 0)
                 {
-                    TaxPercentRate = paymentTaxRate.PercentRate;
+                    TaxPercentRate = TaxRate.TaxPercentRound(paymentTaxRate.Rate.Amount / amount);
                 }
-                else
-                {
-                    var amount = Total.Amount > 0 ? Total.Amount : Price.Amount;
-                    if (amount > 0)
-                    {
-                        TaxPercentRate = TaxRate.TaxPercentRound(paymentTaxRate.Rate.Amount / amount);
-                    }
-                }
-
-                TaxDetails = paymentTaxRate.Line.TaxDetails;
             }
         }
         #endregion
@@ -152,7 +143,7 @@ namespace VirtoCommerce.Storefront.Model.Cart
             {
                 var discount = reward.ToDiscountModel(Price - DiscountAmount);
 
-                if (reward.IsValid && discount.Amount.InternalAmount > 0)
+                if (reward.IsValid)
                 {
                     Discounts.Add(discount);
                     DiscountAmount += discount.Amount;

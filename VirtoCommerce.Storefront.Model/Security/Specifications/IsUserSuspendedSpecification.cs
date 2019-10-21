@@ -4,9 +4,9 @@ namespace VirtoCommerce.Storefront.Model.Security.Specifications
 {
     public class IsUserSuspendedSpecification: ISpecification<User>
     {
-        public bool IsSatisfiedBy(User obj)
+        public bool IsSatisfiedBy(User user)
         {
-            return obj.UserState == AccountState.Rejected;
+            return user.UserState == AccountState.Rejected;
         }
     }
 }

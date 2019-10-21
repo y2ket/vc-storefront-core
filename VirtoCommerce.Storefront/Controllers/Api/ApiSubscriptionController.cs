@@ -11,7 +11,6 @@ using VirtoCommerce.Storefront.Model.Subscriptions.Services;
 namespace VirtoCommerce.Storefront.Controllers.Api
 {
     [StorefrontApiRoute("subscriptions")]
-    [ResponseCache(CacheProfileName = "None")]
     public class ApiSubscriptionController : StorefrontControllerBase
     {
         private readonly ISubscriptionService _subscriptionService;
@@ -25,7 +24,7 @@ namespace VirtoCommerce.Storefront.Controllers.Api
         // POST: storefrontapi/subscriptions/search
         [HttpPost("search")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult<SubscriptionSearchResult>> SearchCustomerSubscriptions([FromBody] SubscriptionSearchCriteria searchCriteria)
+        public async Task<ActionResult<GenericSearchResult<Subscription>>> SearchCustomerSubscriptions([FromBody] SubscriptionSearchCriteria searchCriteria)
         {
             if (searchCriteria == null)
             {
@@ -37,7 +36,7 @@ namespace VirtoCommerce.Storefront.Controllers.Api
 
             var result = await _subscriptionService.SearchSubscriptionsAsync(searchCriteria);
 
-            return new SubscriptionSearchResult
+            return new GenericSearchResult<Subscription>
             {
                 TotalCount = result.TotalItemCount,
                 Results = result.ToArray()
