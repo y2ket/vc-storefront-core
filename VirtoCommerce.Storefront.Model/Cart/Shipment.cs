@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using VirtoCommerce.Storefront.Infrastructure.Swagger;
 using VirtoCommerce.Storefront.Model.Cart.Services;
 using VirtoCommerce.Storefront.Model.Cart.ValidationErrors;
 using VirtoCommerce.Storefront.Model.Common;
@@ -7,6 +8,7 @@ using VirtoCommerce.Storefront.Model.Marketing;
 
 namespace VirtoCommerce.Storefront.Model.Cart
 {
+    [SwaggerSchemaId("CartShipment")]
     public partial class Shipment : Entity, IDiscountable, IValidatable, ITaxable
     {
         public Shipment()
@@ -162,11 +164,20 @@ namespace VirtoCommerce.Storefront.Model.Cart
             }
             if (shipmentTaxRate != null && shipmentTaxRate.Rate.Amount > 0)
             {
-                var amount = Total.Amount > 0 ? Total.Amount : Price.Amount;
-                if (amount > 0)
+                if (shipmentTaxRate.PercentRate > 0)
                 {
-                    TaxPercentRate = TaxRate.TaxPercentRound(shipmentTaxRate.Rate.Amount / amount);
+                    TaxPercentRate = shipmentTaxRate.PercentRate;
                 }
+                else
+                {
+                    var amount = Total.Amount > 0 ? Total.Amount : Price.Amount;
+                    if (amount > 0)
+                    {
+                        TaxPercentRate = TaxRate.TaxPercentRound(shipmentTaxRate.Rate.Amount / amount);
+                    }
+                }
+
+                TaxDetails = shipmentTaxRate.Line.TaxDetails;
             }
         }
         #endregion
@@ -193,7 +204,7 @@ namespace VirtoCommerce.Storefront.Model.Cart
             {
                 var discount = reward.ToDiscountModel(Price - DiscountAmount);
 
-                if (reward.IsValid)
+                if (reward.IsValid && discount.Amount.InternalAmount > 0)
                 {
                     Discounts.Add(discount);
                     DiscountAmount += discount.Amount;

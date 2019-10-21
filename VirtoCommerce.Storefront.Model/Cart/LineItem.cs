@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using VirtoCommerce.Storefront.Infrastructure.Swagger;
 using VirtoCommerce.Storefront.Model.Cart.Services;
 using VirtoCommerce.Storefront.Model.Cart.ValidationErrors;
 using VirtoCommerce.Storefront.Model.Catalog;
@@ -10,6 +12,7 @@ using VirtoCommerce.Storefront.Model.Subscriptions;
 
 namespace VirtoCommerce.Storefront.Model.Cart
 {
+    [SwaggerSchemaId("CartLineItem")]
     public partial class LineItem : Entity, IDiscountable, IValidatable, ITaxable, ICloneable
     {
         public LineItem(Currency currency, Language language)
@@ -21,7 +24,7 @@ namespace VirtoCommerce.Storefront.Model.Cart
             DiscountAmount = new Money(currency);
             DiscountAmountWithTax = new Money(currency);
             DiscountTotal = new Money(currency);
-            DiscountTotalWithTax = new Money();
+            DiscountTotalWithTax = new Money(currency);
             ListPriceWithTax = new Money(currency);
             SalePriceWithTax = new Money(currency);
             PlacedPrice = new Money(currency);
@@ -31,7 +34,7 @@ namespace VirtoCommerce.Storefront.Model.Cart
             TaxTotal = new Money(currency);
             Discounts = new List<Discount>();
             TaxDetails = new List<TaxDetail>();
-            DynamicProperties = new List<DynamicProperty>();
+            DynamicProperties = new MutablePagedList<DynamicProperty>(Enumerable.Empty<DynamicProperty>());
             ValidationErrors = new List<ValidationError>();
             IsValid = true;
         }
@@ -75,6 +78,8 @@ namespace VirtoCommerce.Storefront.Model.Cart
         /// Gets or sets the value of line item name
         /// </summary>
         public string Name { get; set; }
+        [JsonIgnore]
+        public string Title => Name;
 
         /// <summary>
         /// Gets or sets the value of line item quantity
@@ -250,7 +255,7 @@ namespace VirtoCommerce.Storefront.Model.Cart
         /// Dynamic properties collections
         /// </summary>
         /// <value>Dynamic properties collections</value>
-        public IList<DynamicProperty> DynamicProperties { get; set; }
+        public IMutablePagedList<DynamicProperty> DynamicProperties { get; set; }
 
         #region IValidatable Members
         public bool IsValid { get; set; }
@@ -287,13 +292,22 @@ namespace VirtoCommerce.Storefront.Model.Cart
             {
                 lineItemTaxRate = taxRates.FirstOrDefault(x => x.Line.Code != null && x.Line.Code.EqualsInvariant(Sku ?? ""));
             }
-            if (lineItemTaxRate != null && lineItemTaxRate.Rate.Amount > 0)
+            if (lineItemTaxRate != null)
             {
-                var amount = ExtendedPrice.Amount > 0 ? ExtendedPrice.Amount : SalePrice.Amount;
-                if (amount > 0)
+                if (lineItemTaxRate.PercentRate > 0)
                 {
-                    TaxPercentRate = TaxRate.TaxPercentRound(lineItemTaxRate.Rate.Amount / amount);
+                    TaxPercentRate = lineItemTaxRate.PercentRate;
                 }
+                else
+                {
+                    var amount = ExtendedPrice.Amount > 0 ? ExtendedPrice.Amount : SalePrice.Amount;
+                    if (amount > 0)
+                    {
+                        TaxPercentRate = TaxRate.TaxPercentRound(lineItemTaxRate.Rate.Amount / amount);
+                    }
+                }
+
+                TaxDetails = lineItemTaxRate.Line.TaxDetails;
             }
         }
         #endregion
@@ -322,8 +336,11 @@ namespace VirtoCommerce.Storefront.Model.Cart
                 if (reward.IsValid)
                 {
                     var discount = reward.ToDiscountModel(ListPrice - DiscountAmount, Quantity);
-                    Discounts.Add(discount);
-                    DiscountAmount += discount.Amount;
+                    if (discount.Amount.InternalAmount > 0)
+                    {
+                        Discounts.Add(discount);
+                        DiscountAmount += discount.Amount;
+                    }
                 }
             }
         }
@@ -363,7 +380,7 @@ namespace VirtoCommerce.Storefront.Model.Cart
             }
             if (DynamicProperties != null)
             {
-                result.DynamicProperties = new List<DynamicProperty>(DynamicProperties.Select(x => x.Clone() as DynamicProperty));
+                result.DynamicProperties = new MutablePagedList<DynamicProperty>(DynamicProperties.Select(x => x.Clone() as DynamicProperty));
             }
             if (ValidationErrors != null)
             {

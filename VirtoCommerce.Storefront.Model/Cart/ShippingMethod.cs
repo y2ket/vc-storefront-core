@@ -34,7 +34,9 @@ namespace VirtoCommerce.Storefront.Model
         /// Gets or sets the value of shipping method name
         /// </summary>
         public string Name { get; set; }
+        public string Title => Name;
 
+        public string Handle => ShipmentMethodCode;
         /// <summary>
         /// Gets or sets the value of shipping method option name
         /// </summary>
@@ -139,11 +141,20 @@ namespace VirtoCommerce.Storefront.Model
 
             if (taxRate != null && taxRate.Rate.Amount > 0)
             {
-                var amount = Total.Amount > 0 ? Total.Amount : Price.Amount;
-                if (amount > 0)
+                if (taxRate.PercentRate > 0)
                 {
-                    TaxPercentRate = TaxRate.TaxPercentRound(taxRate.Rate.Amount / amount);
+                    TaxPercentRate = taxRate.PercentRate;
                 }
+                else
+                {
+                    var amount = Total.Amount > 0 ? Total.Amount : Price.Amount;
+                    if (amount > 0)
+                    {
+                        TaxPercentRate = TaxRate.TaxPercentRound(taxRate.Rate.Amount / amount);
+                    }
+                }
+
+                TaxDetails = taxRate.Line.TaxDetails;
             }
         }
 
